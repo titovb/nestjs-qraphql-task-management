@@ -16,7 +16,7 @@ import { ProjectModule } from './project/project.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
-        uri: config.get<string>('DB_URI'),
+        uri: config.get('DB_URI'),
         useNewUrlParser: true,
         useFindAndModify: false
       }),
@@ -24,11 +24,13 @@ import { ProjectModule } from './project/project.module';
     }),
     GraphQLModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
-        context: ({req}) => ({req}),
-        autoSchemaFile: config.get<string>('GQL_SCHEMA_PATH'),
-        debug: config.get<boolean>('GQL_DEBUG')
-      }),
+      useFactory: (config: ConfigService) => {
+        return ({
+          context: ({req}) => ({req}),
+          autoSchemaFile: config.get('GQL_SCHEMA_PATH'),
+          debug: config.get('GQL_DEBUG') === 'true'
+        });
+      },
       inject: [ConfigService]
     }),
     UserModule,
