@@ -1,5 +1,5 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
-import {User} from '../user/user.schema';
+import {User} from '../user/user';
 import {JwtService} from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import {UserService} from '../user/user.service';

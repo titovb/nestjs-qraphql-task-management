@@ -1,5 +1,5 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
-import {User} from './user.schema';
+import {User} from './user';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
 
@@ -20,5 +20,9 @@ export class UserService {
 
   public create(user: User): Promise<User> {
     return this.userModel.create(user);
+  }
+
+  public async getByIds(ids: string[]): Promise<User[]> {
+    return this.userModel.find({_id: {$in: ids}}).exec();
   }
 }

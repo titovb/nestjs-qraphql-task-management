@@ -4,6 +4,7 @@ import {MongooseModule} from '@nestjs/mongoose';
 import {GraphQLModule} from '@nestjs/graphql';
 import {UserModule} from './user/user.module';
 import {AuthModule} from './auth/auth.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import {AuthModule} from './auth/auth.module';
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
         uri: config.get<string>('DB_URI'),
-        useNewUrlParser: true
+        useNewUrlParser: true,
+        useFindAndModify: false
       }),
       inject: [ConfigService]
     }),
@@ -30,7 +32,8 @@ import {AuthModule} from './auth/auth.module';
       inject: [ConfigService]
     }),
     UserModule,
-    AuthModule
+    AuthModule,
+    ProjectModule
   ],
   controllers: [],
   providers: []
