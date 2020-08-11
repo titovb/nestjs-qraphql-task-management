@@ -4,6 +4,8 @@ import {ConfigService} from '@nestjs/config';
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {User} from '../user/user';
+import {isMongoId} from 'class-validator';
+import {ObjectId} from 'mongodb';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   public validate(payload: any): Promise<User> {
     const id = payload.sub;
-    if (!id) throw new UnauthorizedException();
-    return this.authService.validateUser(id);
+    if (!id && !isMongoId(id)) throw new UnauthorizedException();
+    return this.authService.validateUser(new ObjectId(id));
   }
 }

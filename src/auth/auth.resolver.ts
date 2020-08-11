@@ -15,7 +15,7 @@ export class AuthResolver {
               private readonly projectService: ProjectService) {
   }
 
-  @Mutation(()  => User)
+  @Mutation(() => User)
   register(@Args('registerData') registerData: RegisterInput): Promise<User> {
     return this.authService.register(registerData);
   }

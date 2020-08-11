@@ -1,28 +1,34 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {User} from './user';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
+import {BaseService} from '../common/base.service';
+import {Constants} from '../common/constants';
+import {ObjectId} from 'mongodb';
 
 @Injectable()
-export class UserService {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {
+export class UserService extends BaseService<User> {
+  constructor(@InjectModel(Constants.UserRef) userModel: Model<User>) {
+    super(userModel);
   }
 
-  public async getOneById(id: string): Promise<User> {
-    const user = await this.userModel.findById(id).exec();
-    if (!user) throw new NotFoundException(`User '${id}' not found`);
-    return user;
+  public async getOneByIdOrFail(id: ObjectId): Promise<User> {
+    return super.getOneOrFail({_id: id});
+  }
+
+  public async getOneById(id: ObjectId): Promise<User> {
+    return super.getOne({_id: id});
   }
 
   public getOneByEmail(email: string): Promise<User> {
-    return this.userModel.findOne({email}).exec();
+    return super.getOne({email});
   }
 
   public create(user: User): Promise<User> {
-    return this.userModel.create(user);
+    return super.createOne(user);
   }
 
-  public async getByIds(ids: string[]): Promise<User[]> {
-    return this.userModel.find({_id: {$in: ids}}).exec();
+  public async getByIds(ids: ObjectId[]): Promise<User[]> {
+    return super.getMany({_id: {$in: ids}});
   }
 }

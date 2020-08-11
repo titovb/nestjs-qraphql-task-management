@@ -1,4 +1,5 @@
 export enum Constants {
-  User = 'user',
-  Project = 'project'
+  UserRef = 'user',
+  ProjectRef = 'project',
+  ColumnRef = 'column'
 }

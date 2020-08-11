@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import {UserService} from '../user/user.service';
 import {RegisterInput} from './dto/register.input';
 import {LoginInput} from './dto/login.input';
+import {ObjectId} from 'mongodb';
 
 @Injectable()
 export class AuthService {
@@ -27,8 +28,8 @@ export class AuthService {
     return this.jwtService.sign({sub: user._id});
   }
 
-  public validateUser(id: string): Promise<User> {
-    return this.userService.getOneById(id)
+  public validateUser(id: ObjectId): Promise<User> {
+    return this.userService.getOneByIdOrFail(id)
       .catch(() => {
         throw new UnauthorizedException();
       });

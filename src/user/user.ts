@@ -5,10 +5,10 @@ import {Project} from '../project/project';
 import {Constants} from '../common/constants';
 
 @ObjectType()
-@Schema({collection: Constants.User, id: false})
+@Schema({collection: Constants.UserRef, id: false})
 export class User extends Document {
   @Field(() => ID)
-  _id: string;
+  _id: any;
 
   @Field()
   @Prop({required: true})
@@ -19,7 +19,7 @@ export class User extends Document {
   email: string;
 
   @Prop({required: true})
-  password?: string;
+  password: string;
 
   @Field(() => [Project], {nullable: 'items'})
   projects: Project[];

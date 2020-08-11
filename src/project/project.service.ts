@@ -1,19 +1,23 @@
-import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Project} from './project';
 import {Model} from 'mongoose';
 import {ProjectCreateInput} from './dto/project-create.input';
 import {ProjectUpdateInput} from './dto/project-update.input';
 import {UserService} from '../user/user.service';
+import {BaseService} from '../common/base.service';
+import {Constants} from '../common/constants';
+import {ObjectId} from 'mongodb';
 
 @Injectable()
-export class ProjectService {
-  constructor(@InjectModel(Project.name) private readonly projectModel: Model<Project>,
+export class ProjectService extends BaseService<Project> {
+  constructor(@InjectModel(Constants.ProjectRef) projectModel: Model<Project>,
               private readonly userService: UserService) {
+    super(projectModel);
   }
 
-  public create(userId: string, dto: ProjectCreateInput): Promise<Project> {
-    return this.projectModel.create({
+  public create(userId: ObjectId, dto: ProjectCreateInput): Promise<Project> {
+    return super.createOne({
       ...dto,
       createdBy: userId,
       updatedBy: userId,
@@ -21,51 +25,42 @@ export class ProjectService {
     } as Project);
   }
 
-  public async update(userId: string, dto: ProjectUpdateInput): Promise<Project> {
-    const project = await this.projectModel.findOneAndUpdate(
+  public update(userId: ObjectId, dto: ProjectUpdateInput): Promise<Project> {
+    return super.updateOne(
       {_id: dto._id, participants: userId},
-      {$set: {...dto, updatedBy: userId}},
-      {new: true}
+      {$set: {...dto, updatedBy: userId}}
     );
-    if (!project) throw new NotFoundException(`Project '${dto._id}' was not found`);
-    return project;
   }
 
-  public async getById(userId: string, id: string): Promise<Project> {
-    const project = await this.projectModel.findOne({_id: id, participants: userId});
-    if (!project) throw new NotFoundException(`Project '${id}' was not found`);
-    return project;
+  public async getByIdAndParticipantOrFail(userId: ObjectId, id: ObjectId): Promise<Project> {
+    return super.getOneOrFail({_id: id, participants: userId});
   }
 
-  public async delete(userId: string, id: string): Promise<Project> {
-    const project = await this.projectModel.findOneAndDelete({_id: id, createdBy: userId});
-    if (!project) throw new NotFoundException(`Project '${id}' was not found`);
-    return project;
+  public async delete(userId: ObjectId, id: ObjectId): Promise<Project> {
+    return super.deleteOne({_id: id, createdBy: userId});
   }
 
-  public getByParticipant(userId: string): Promise<Project[]> {
-    return this.projectModel.find({participants: userId}).exec();
+  public getByParticipant(userId: ObjectId): Promise<Project[]> {
+    return super.getMany({participants: userId});
   }
 
-  public async addParticipant(userId: string, id: string, participantId: string): Promise<Project> {
-    await this.userService.getOneById(participantId);
-    const project = await this.projectModel.findOneAndUpdate(
+  public async addParticipant(userId: ObjectId, id: ObjectId, participantId: ObjectId): Promise<Project> {
+    await this.userService.getOneByIdOrFail(participantId);
+    return super.updateOne(
       {_id: id, createdBy: userId},
-      {$addToSet: {participants: participantId}, $set: {updatedBy: userId}},
-      {new: true}
+      {$addToSet: {participants: participantId}, $set: {updatedBy: userId}}
     );
-    if (!project) throw new NotFoundException(`Project '${id}' was not found`);
-    return project;
   }
 
-  public async removeParticipant(userId: string, id: string, participantId: string): Promise<Project> {
-    if (userId === participantId) throw new BadRequestException(`Owner can't be removed from project`);
-    const project = await this.projectModel.findOneAndUpdate(
+  public async removeParticipant(userId: ObjectId, id: ObjectId, participantId: ObjectId): Promise<Project> {
+    if (userId.equals(participantId)) throw new BadRequestException(`Owner can't be removed from project`);
+    return super.updateOne(
       {_id: id, createdBy: userId},
-      {$pull: {participants: participantId}, $set: {updatedBy: userId}},
-      {new: true}
+      {$pull: {participants: participantId}, $set: {updatedBy: userId}}
     );
-    if (!project) throw new NotFoundException(`Project '${id}' was not found`);
-    return project;
+  }
+
+  public async getById(id: ObjectId): Promise<Project> {
+    return this.getOne({_id: id});
   }
 }
