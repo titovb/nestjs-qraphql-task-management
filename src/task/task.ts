@@ -1,20 +1,23 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {Constants} from '../common/constants';
 import {Field, ID, ObjectType} from '@nestjs/graphql';
+import {Constants} from '../common/constants';
 import {Document, Types} from 'mongoose';
-import {Project} from '../project/project';
 import {User} from '../user/user';
-import {Task} from '../task/task';
+import {Column} from '../column/column';
 
 @ObjectType()
-@Schema({collection: Constants.ColumnRef, timestamps: true})
-export class Column extends Document {
+@Schema({collection: Constants.TaskRef, id: false, timestamps: true})
+export class Task extends Document {
   @Field(() => ID)
   _id: any;
 
   @Field()
   @Prop({required: true})
   name: string;
+
+  @Field({nullable: true})
+  @Prop()
+  description?: string;
 
   @Field()
   createdAt: Date;
@@ -30,12 +33,13 @@ export class Column extends Document {
   @Prop({type: Types.ObjectId, ref: Constants.UserRef, required: true, index: true})
   updatedBy: any;
 
-  @Field(() => Project)
-  @Prop({type: Types.ObjectId, ref: Constants.ProjectRef, required: true, index: true})
-  project: any;
+  @Field(() => Column)
+  @Prop({type: Types.ObjectId, ref: Constants.ColumnRef, required: true, index: true})
+  column: any;
 
-  @Field(() => [Task], {nullable: 'items'})
-  tasks?: Task[];
+  @Field(() => User, {nullable: true})
+  @Prop({type: Types.ObjectId, ref: Constants.UserRef, index: true})
+  assignee?: any;
 }
 
-export const ColumnSchema = SchemaFactory.createForClass(Column);
+export const TaskSchema = SchemaFactory.createForClass(Task);

@@ -32,4 +32,12 @@ export class ColumnService extends BaseService<Column> {
   public delete(projectId: ObjectId, id: ObjectId): Promise<Column> {
     return super.deleteOne({project: projectId, _id: id});
   }
+
+  public getOneByIdAndProjectOrFail(id: ObjectId, projectId: ObjectId): Promise<Column> {
+    return super.getOneOrFail({_id: id, project: projectId});
+  }
+
+  public getOneById(id: ObjectId): Promise<Column> {
+    return super.getOne({_id: id});
+  }
 }

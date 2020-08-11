@@ -37,8 +37,8 @@ export class Project extends Document {
   @Prop({type: [Types.ObjectId], ref: Constants.UserRef, required: true, index: true})
   participants: any[];
 
-  @Field(() => [Column])
-  columns: Column[];
+  @Field(() => [Column], {nullable: 'items'})
+  columns?: Column[];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

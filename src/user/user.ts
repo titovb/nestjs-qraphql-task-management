@@ -22,7 +22,7 @@ export class User extends Document {
   password: string;
 
   @Field(() => [Project], {nullable: 'items'})
-  projects: Project[];
+  projects?: Project[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

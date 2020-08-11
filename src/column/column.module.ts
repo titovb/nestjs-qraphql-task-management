@@ -5,11 +5,15 @@ import {ColumnService} from './column.service';
 import {ColumnResolver} from './column.resolver';
 import {ProjectModule} from '../project/project.module';
 import {Constants} from '../common/constants';
+import {UserModule} from '../user/user.module';
+import {TaskModule} from '../task/task.module';
 
 @Module({
    imports: [
      MongooseModule.forFeature([{name: Constants.ColumnRef, schema: ColumnSchema}]),
-     forwardRef(() => ProjectModule)
+     UserModule,
+     forwardRef(() => ProjectModule),
+     forwardRef(() => TaskModule)
    ],
    providers: [
      ColumnService,

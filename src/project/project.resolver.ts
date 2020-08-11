@@ -74,7 +74,7 @@ export class ProjectResolver {
     return this.userService.getByIds(project.participants);
   }
 
-  @ResolveField('columns', () => [Column])
+  @ResolveField('columns', () => [Column], {nullable: 'items'})
   getColumns(@Parent() project: Project): Promise<Column[]> {
     return this.columnService.getByProject(project._id);
   }

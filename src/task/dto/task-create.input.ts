@@ -2,7 +2,7 @@ import {Field, InputType} from '@nestjs/graphql';
 import {IsNotEmptyString} from '../../common/is-not-empty-string.validator';
 
 @InputType()
-export class ProjectCreateInput {
+export class TaskCreateInput {
   @Field()
   @IsNotEmptyString()
   name: string;

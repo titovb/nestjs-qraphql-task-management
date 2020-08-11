@@ -63,4 +63,8 @@ export class ProjectService extends BaseService<Project> {
   public async getById(id: ObjectId): Promise<Project> {
     return this.getOne({_id: id});
   }
+
+  public async getByIdAndParticipant(id: ObjectId, participantId: ObjectId): Promise<Project> {
+    return super.getOne({_id: id, participants: participantId});
+  }
 }

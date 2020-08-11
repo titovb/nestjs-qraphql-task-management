@@ -1,13 +1,13 @@
 import {Field, ID, InputType, PartialType} from '@nestjs/graphql';
+import {TaskCreateInput} from './task-create.input';
 import {IsMongoId} from 'class-validator';
-import {ProjectCreateInput} from './project-create.input';
-import {Transform} from 'class-transformer';
 import {ObjectId} from 'mongodb';
+import {Transform} from 'class-transformer';
 
 @InputType()
-export class ProjectUpdateInput extends PartialType(ProjectCreateInput) {
+export class TaskUpdateInput extends PartialType(TaskCreateInput) {
   @Field(() => ID)
   @IsMongoId()
   @Transform((val: string) => new ObjectId(val))
-  _id: string;
+  _id: ObjectId;
 }

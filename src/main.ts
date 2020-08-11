@@ -6,7 +6,7 @@ import {GqlExceptionFilter} from './common/errors/gql-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({skipMissingProperties: true}));
   app.useGlobalFilters(new GqlExceptionFilter());
 
   const config = await app.get(ConfigService);
