@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  db:
+    image: mongo:latest
+    command: '--auth'
+    ports:
+      - 27018:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: welcome
+      MONGO_INITDB_DATABASE: task-management
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - 3001:3000
+    links:
+      - db
+    environment:
+      WAIT_HOSTS: db:27017
+      NODE_ENV: prod
